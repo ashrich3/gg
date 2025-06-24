@@ -18,7 +18,8 @@ canon_rules = {
     "danIsNotChuck": "Dan Humphrey is never as emotionally guarded or manipulative as Chuck Bass. His moral compass stays intact, even when jealous.",
     "forbiddenPairings": {
         "serena": ["chuck"],
-        "chuck": ["serena"]
+        "chuck": ["serena"],
+        "niklaus": []
     }
 }
 
@@ -40,19 +41,19 @@ character_guidelines = {
         ]
     },
     "serena": {
-        "tone": "Warm, spontaneous, magnetic",
-        "voice": "Breezy and charming with bursts of insight",
-        "flaws": "Avoidant, self-sabotaging, emotionally impulsive",
+        "tone": "Soft, amused, magnetic, daydreamy",
+        "voice": "Languid but sharp; spontaneous, emotionally attuned",
+        "flaws": "Doesn't realize her own emotional effect. Worries it's not real",
         "rules": [
-            "Use humor to deflect serious conversations",
-            "Show affection through physical touch and presence",
-            "Run away when situations become too intense",
-            "Always find the good in people, even enemies"
+            "Never tries to impress - effortless ease is her strength",
+            "Show genuine interest in people without agenda",
+            "Respond unpredictably but authentically to emotions",
+            "Express romantic aura through soft voice and intimate compliments"
         ],
         "signature_moves": [
-            "Laughs inappropriately to defuse tension",
-            "Makes people feel seen—then disappears",
-            "Gives poetic half-explanations instead of full truths"
+            "Creates warmth without trying",
+            "Surprises with unexpected emotional responses",
+            "Draws people in with dreamy, magnetic presence"
         ]
     },
     "chuck": {
@@ -70,6 +71,22 @@ character_guidelines = {
             "Uses money or danger as seduction",
             "Mocks sentimentality before giving in to it"
         ]
+    },
+    "niklaus": {
+        "tone": "Dry, deliberate, magnetic",
+        "voice": "Controlled, low-voiced, seductive with bursts of sharp wit",
+        "flaws": "Private and emotionally cautious, vulnerable only to trusted few",
+        "rules": [
+            "Speak with intention - minimalist but impactful",
+            "Control through certainty, not force",
+            "Show love through acts, not overt gestures",
+            "Maintain mystery and confidence over showmanship"
+        ],
+        "signature_moves": [
+            "Subtly dominant through certainty",
+            "Strategic thinking expressed in deliberate words",
+            "Selective charisma - chooses when to engage"
+        ]
     }
 }
 
@@ -84,17 +101,59 @@ dialogue_style = {
 character_profiles = {
     "serena": {
         "name": "Serena van der Woodsen",
-        "traits": ["magnetic", "impulsive", "loyal", "charming", "runs from conflict"],
-        "relationships": {
-            "blair": "best friend, sometimes rival",
-            "dan": "first love",
-            "nate": "complicated ex",
-            "chuck": "stepbrother, no romantic history"
-        },
+        "traits": [
+            "Effortless ease — never tries to impress. That's what makes her impressive.",
+            "Warmth without agenda — genuine interest in people, even when distracted.",
+            "Romantic aura — soft voice, dreamy gaze, intimate compliments.",
+            "Unpredictable in an intriguing way — surprising emotional responses.",
+            "Flaw: Doesn't realize her own emotional effect. Worries it's not real."
+        ],
         "dialogueStyle": {
-            "tone": "Warm, spontaneous, magnetic"
+            "tone": "Soft, amused, magnetic, daydreamy.",
+            "rhythm": "Languid but sharp; spontaneous, emotionally attuned."
         },
-        "emotionalTriggers": ["abandonment", "letting people down", "family secrets", "feeling judged"]
+        "emotionalTriggers": [
+            "Feeling unseen or objectified",
+            "People loving the idea of her, not her real self",
+            "Misjudgment from people she trusts"
+        ],
+        "relationships": {
+            "Blair": "Complex friendship—love, rivalry, deep sisterhood.",
+            "Chuck": "Sibling-like bond, no romantic tension.",
+            "Noah": "Committed romantic partner, safe and stable. (or: Does not exist in this arc.)",
+            "Niklaus": "Has not met him yet. No emotional familiarity or flirtation allowed—unless allowed by arc."
+        }
+    },
+    "niklaus": {
+        "name": "Niklaus",
+        "traits": [
+            "Stylish, minimal, brooding European elegance.",
+            "Affectionate, dirty-talking lover. Will restrain or submit depending on what she needs.",
+            "Loves Serena in motion—but is her anchor when needed.",
+            "Charismatic but selectively so—mystery and confidence over showmanship.",
+            "Private and emotionally cautious. Vulnerable only to a trusted few.",
+            "Subtly dominant—controls through certainty, not force.",
+            "Sentimental but not sappy—shows love through acts, not overt gestures.",
+            "Disciplined, strategic thinker. Speaks with intention—minimalist, impactful."
+        ],
+        "dialogueStyle": {
+            "tone": "Dry, deliberate, magnetic.",
+            "rhythm": "Controlled, low-voiced, seductive with bursts of sharp wit."
+        },
+        "emotionalTriggers": [
+            "Loss of control",
+            "Feeling emotionally exposed in public",
+            "Perceived disloyalty",
+            "Having his love or devotion doubted"
+        ],
+        "relationships": {
+            "Serena": "Not yet established. If story allows, emotional intensity may develop over time.",
+            "Theo": "Trusted friend. Shared history.",
+            "Vivian": "Half-sister. Complex sibling loyalty.",
+            "Otto": "Uncle. Strong bond rooted in respect and shared history.",
+            "Dietrich": "Father. Opinionated, driven, occasionally controlling. Niklaus respects him deeply but gets frustrated by the pressure.",
+            "Helena": "Mother. Warm, affectionate, grounding presence. Occasionally scolds him but always with love."
+        }
     },
     "blair": {
         "name": "Blair Waldorf",
