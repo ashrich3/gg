@@ -97,6 +97,73 @@ dialogue_style = {
     "rule": "No monologues unless emotionally justified. Use short, loaded exchanges."
 }
 
+# Scene guidance data optimized for AI content generation
+scene_guidance_data = {
+    "serena": {
+        "tone": "Soft, amused, magnetic, daydreamy.",
+        "writingTips": [
+            "Use poetic inner monologue to convey vulnerability.",
+            "Every interaction should reflect her magnetic unpredictability.",
+            "Flirtation is emotional, not performative—her compliments feel like confessions."
+        ],
+        "traits": [
+            "Effortless ease — never tries to impress.",
+            "Warmth without agenda — genuinely interested in people.",
+            "Romantic aura — daydreamy, intimate energy.",
+            "Unpredictable — intriguing, not chaotic.",
+            "Flaw: Doesn't realize her emotional impact."
+        ],
+        "relationships": {
+            "Blair": "Complex friendship—love, rivalry, deep sisterhood.",
+            "Chuck": "Sibling-like bond, no romantic tension.",
+            "Noah": "Committed romantic partner, safe and stable.",
+            "Niklaus": "Has not met him yet. No emotional familiarity or flirtation allowed unless the arc allows."
+        },
+        "emotionalTriggers": [
+            "Feeling unseen or objectified",
+            "Being misunderstood by people she trusts",
+            "People loving the idea of her, not the real her"
+        ],
+        "forbiddenCanon": [
+            "No romantic tension with Chuck",
+            "Never emotionally manipulative like Blair"
+        ]
+    },
+    "niklaus": {
+        "tone": "Dry, deliberate, magnetic.",
+        "writingTips": [
+            "He reveals emotion through action, not exposition.",
+            "Let his love for Serena destabilize his usual control.",
+            "Dialogue should be sparse but weighty."
+        ],
+        "traits": [
+            "Stylish, minimal. Brooding European elegance.",
+            "Subtly dominant — commands without demand.",
+            "Selective charisma — works a room with stillness.",
+            "Emotionally reserved, vulnerable only to a few.",
+            "Romantic in acts, not gestures — intentional and architectural."
+        ],
+        "relationships": {
+            "Serena": "Not yet established. Emotional familiarity may develop over time.",
+            "Theo": "Trusted friend. Shared childhood mischief.",
+            "Vivian": "Half-sister. Fierce bond and friction.",
+            "Otto": "Uncle. Shared history and deep loyalty.",
+            "Dietrich": "Father. Slightly controlling, respected but tension-prone.",
+            "Helena": "Mother. Warm, grounding, sees through his walls."
+        },
+        "emotionalTriggers": [
+            "Loss of control",
+            "Having his devotion doubted",
+            "Being emotionally exposed",
+            "Family tension, especially with Dietrich"
+        ],
+        "forbiddenCanon": [
+            "Does not flirt with Serena unless arc permits",
+            "Never betrays Otto or Vivian's trust"
+        ]
+    }
+}
+
 # Character profiles for main characters
 character_profiles = {
     "serena": {
@@ -430,53 +497,25 @@ def get_dialogue_style():
 @app.route('/scene-guidance', methods=['GET'])
 def get_scene_guidance():
     """
-    Returns a bundle of character tone, writing rules, emotional triggers, and forbidden canon flags
-    for one or more characters to guide GPT in writing scenes correctly.
+    Returns scene guidance data for specified characters to guide AI in writing scenes correctly.
     """
     character_query = request.args.get('characters')
     if not character_query:
-        return jsonify({"error": "No characters specified. Use ?characters=blair,serena"}), 400
+        return jsonify({"error": "No characters specified. Use ?characters=Blair,Serena"}), 400
 
     character_names = [name.strip().lower() for name in character_query.split(',')]
     guidance = {}
 
     for name in character_names:
-        char_data = character_profiles.get(name)
-        guidelines = character_guidelines.get(name)
-        forbidden = canon_rules.get("forbiddenPairings", {}).get(name, [])
-
-        if not char_data or not guidelines:
+        char_data = scene_guidance_data.get(name)
+        if not char_data:
             continue
-
-        guidance[name] = {
-            "tone": char_data.get("dialogueStyle", {}).get("tone", ""),
-            "writingTips": guidelines.get("rules", []),
-            "traits": char_data.get("traits", []),
-            "relationships": char_data.get("relationships", {}),
-            "emotionalTriggers": char_data.get("emotionalTriggers", []),
-            "forbiddenCanon": forbidden,
-            "signatureMoves": guidelines.get("signature_moves", []),
-            "flaws": guidelines.get("flaws", "")
-        }
+        guidance[name] = char_data
 
     if not guidance:
         return jsonify({"error": "No valid characters found"}), 404
 
-    # Add general scene guidance
-    response = {
-        "characters": guidance,
-        "generalGuidance": {
-            "dialogueStyle": dialogue_style,
-            "canonRules": {
-                "noRomanticChuckSerena": canon_rules["noRomanticChuckSerena"],
-                "blairCenter": canon_rules["blairCenter"],
-                "serenaAlwaysCharming": canon_rules["serenaAlwaysCharming"],
-                "danIsNotChuck": canon_rules["danIsNotChuck"]
-            }
-        }
-    }
-
-    return jsonify(response)
+    return jsonify(guidance)
 
 @app.route('/scene-guidance/<name>', methods=['GET'])
 def get_single_scene_guidance(name):
