@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 # Configure logging for debugging
 logging.basicConfig(level=logging.DEBUG)
@@ -15,7 +15,11 @@ canon_rules = {
     "noRomanticChuckSerena": "Chuck Bass and Serena van der Woodsen never have romantic or sexual tension. They treat each other as quasi-siblings with loyalty and distance.",
     "blairCenter": "Blair Waldorf is never emotionally submissive. She must always maintain agency, even when vulnerable.",
     "serenaAlwaysCharming": "Serena defuses tension with humor, warmth, and charm—even when lying or in crisis.",
-    "danIsNotChuck": "Dan Humphrey is never as emotionally guarded or manipulative as Chuck Bass. His moral compass stays intact, even when jealous."
+    "danIsNotChuck": "Dan Humphrey is never as emotionally guarded or manipulative as Chuck Bass. His moral compass stays intact, even when jealous.",
+    "forbiddenPairings": {
+        "serena": ["chuck"],
+        "chuck": ["serena"]
+    }
 }
 
 character_guidelines = {
@@ -23,6 +27,12 @@ character_guidelines = {
         "tone": "Witty, strategic, emotionally armored",
         "voice": "Highly articulate, biting but elegant. She weaponizes words.",
         "flaws": "Control issues, jealousy, perfectionism",
+        "rules": [
+            "Never show vulnerability without a strategic purpose",
+            "Always maintain verbal superiority in conversations",
+            "Use fashion and status as weapons when threatened",
+            "Express love through acts of service, not words"
+        ],
         "signature_moves": [
             "Delivers cutting lines with a smile",
             "Exploits others' weaknesses to regain power",
@@ -33,6 +43,12 @@ character_guidelines = {
         "tone": "Warm, spontaneous, magnetic",
         "voice": "Breezy and charming with bursts of insight",
         "flaws": "Avoidant, self-sabotaging, emotionally impulsive",
+        "rules": [
+            "Use humor to deflect serious conversations",
+            "Show affection through physical touch and presence",
+            "Run away when situations become too intense",
+            "Always find the good in people, even enemies"
+        ],
         "signature_moves": [
             "Laughs inappropriately to defuse tension",
             "Makes people feel seen—then disappears",
@@ -43,6 +59,12 @@ character_guidelines = {
         "tone": "Dark, sardonic, emotionally restrained",
         "voice": "Speaks in controlled, evocative phrases",
         "flaws": "Power obsession, emotional repression",
+        "rules": [
+            "Never admit feelings directly, always through actions",
+            "Use wealth and power to mask insecurity",
+            "Show care through protection, not affection",
+            "Maintain emotional distance except with Blair"
+        ],
         "signature_moves": [
             "Reveals vulnerability only in private",
             "Uses money or danger as seduction",
@@ -68,7 +90,11 @@ character_profiles = {
             "dan": "first love",
             "nate": "complicated ex",
             "chuck": "stepbrother, no romantic history"
-        }
+        },
+        "dialogueStyle": {
+            "tone": "Warm, spontaneous, magnetic"
+        },
+        "emotionalTriggers": ["abandonment", "letting people down", "family secrets", "feeling judged"]
     },
     "blair": {
         "name": "Blair Waldorf",
@@ -77,7 +103,24 @@ character_profiles = {
             "serena": "best friend",
             "chuck": "true love",
             "nate": "high school boyfriend"
-        }
+        },
+        "dialogueStyle": {
+            "tone": "Witty, strategic, emotionally armored"
+        },
+        "emotionalTriggers": ["losing control", "being second best", "vulnerability", "imperfection"]
+    },
+    "chuck": {
+        "name": "Chuck Bass",
+        "traits": ["manipulative", "vulnerable underneath", "wealthy", "cynical"],
+        "relationships": {
+            "blair": "true love",
+            "serena": "stepsister, protective",
+            "nate": "best friend"
+        },
+        "dialogueStyle": {
+            "tone": "Dark, sardonic, emotionally restrained"
+        },
+        "emotionalTriggers": ["abandonment", "father issues", "losing blair", "showing weakness"]
     }
 }
 
@@ -258,7 +301,8 @@ def home():
             "canon_rules": "GET /canon-rules",
             "characters": "GET /characters/<name>",
             "character_guidelines": "GET /character-guidelines/<name>",
-            "dialogue_style": "GET /dialogue-style"
+            "dialogue_style": "GET /dialogue-style",
+            "scene_guidance": "GET /scene-guidance?characters=blair,serena"
         },
         "example": "/recaps/season/1/episode/1",
         "available_episodes": len(episode_recaps),
@@ -322,6 +366,57 @@ def get_dialogue_style():
     Get dialogue style guidelines
     """
     return jsonify(dialogue_style)
+
+@app.route('/scene-guidance', methods=['GET'])
+def get_scene_guidance():
+    """
+    Returns a bundle of character tone, writing rules, emotional triggers, and forbidden canon flags
+    for one or more characters to guide GPT in writing scenes correctly.
+    """
+    character_query = request.args.get('characters')
+    if not character_query:
+        return jsonify({"error": "No characters specified. Use ?characters=blair,serena"}), 400
+
+    character_names = [name.strip().lower() for name in character_query.split(',')]
+    guidance = {}
+
+    for name in character_names:
+        char_data = character_profiles.get(name)
+        guidelines = character_guidelines.get(name)
+        forbidden = canon_rules.get("forbiddenPairings", {}).get(name, [])
+
+        if not char_data or not guidelines:
+            continue
+
+        guidance[name] = {
+            "tone": char_data.get("dialogueStyle", {}).get("tone", ""),
+            "writingTips": guidelines.get("rules", []),
+            "traits": char_data.get("traits", []),
+            "relationships": char_data.get("relationships", {}),
+            "emotionalTriggers": char_data.get("emotionalTriggers", []),
+            "forbiddenCanon": forbidden,
+            "signatureMoves": guidelines.get("signature_moves", []),
+            "flaws": guidelines.get("flaws", "")
+        }
+
+    if not guidance:
+        return jsonify({"error": "No valid characters found"}), 404
+
+    # Add general scene guidance
+    response = {
+        "characters": guidance,
+        "generalGuidance": {
+            "dialogueStyle": dialogue_style,
+            "canonRules": {
+                "noRomanticChuckSerena": canon_rules["noRomanticChuckSerena"],
+                "blairCenter": canon_rules["blairCenter"],
+                "serenaAlwaysCharming": canon_rules["serenaAlwaysCharming"],
+                "danIsNotChuck": canon_rules["danIsNotChuck"]
+            }
+        }
+    }
+
+    return jsonify(response)
 
 @app.errorhandler(404)
 def not_found(error):
